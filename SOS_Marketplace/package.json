@@ -10,9 +10,10 @@
       "author": "",
       "license": "ISC",
       "dependencies": {
-  "@neondatabase/serverless": "^0.10.0",
   "@netlify/functions": "^2.5.1"
 }
 
 
+
     }
+
