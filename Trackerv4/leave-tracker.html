@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="icons/icons.png">
+  <title>Leave Tracker ✓</title>
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Shared Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+
+  <style>
+    /* --- LEAVE TRACKER STYLES --- */
+
+    :root {
+      --bg: #07090b;
+      --panel: #0b1116;
+      --muted: #9aa4b2;
+      --accent: #7dd3fc;
+      --success: #16a34a;
+      --danger: #ef4444;
+      --info: #3b82f6;
+      --warn: #f59e0b;
+      --border-color: rgba(255, 255, 255, 0.05);
+      --text-primary: #e6eef6;
+      --input-bg: rgba(255, 255, 255, 0.04);
+    }
+
+    .app { height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+    .app__body { overflow-y: auto; padding-bottom: 20px; flex: 1; padding-right: 5px; }
+
+    /* --- INTERACTIVITY --- */
+    /* Title Clickable */
+    .titleBlock h1 { cursor: pointer; transition: opacity 0.2s; }
+    .titleBlock h1:hover { opacity: 0.8; }
+    
+    /* Card Clickable (Dashboard Mode) */
+    .accountsWrap:not(.single-view) .accountCard { cursor: pointer; user-select: none; }
+
+    /* --- COOL SCROLLBAR --- */
+    .app__body::-webkit-scrollbar,
+    .agentList::-webkit-scrollbar,
+    .accountsWrap.single-view .agentList::-webkit-scrollbar { width: 5px; height: 6px; }
+    .app__body::-webkit-scrollbar-track,
+    .agentList::-webkit-scrollbar-track { background: transparent; }
+    .app__body::-webkit-scrollbar-thumb,
+    .agentList::-webkit-scrollbar-thumb { background-color: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+    .app__body::-webkit-scrollbar-thumb:hover,
+    .agentList::-webkit-scrollbar-thumb:hover { background-color: rgba(255, 255, 255, 0.2); }
+
+    /* --- DASHBOARD VIEW (GRID) --- */
+    .accountsWrap {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
+        gap: 15px;
+        align-items: start;
+    }
+
+    /* DEFAULT CARD (Dashboard Mode) */
+    .accountCard {
+        background: rgba(255,255,255,0.02);
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--border-color);
+        height: 340px; 
+        border-radius: 6px;
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    
+    .accountsWrap:not(.single-view) .accountCard:hover {
+        transform: translateY(-3px);
+        border-color: var(--accent);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    /* CARD HEADER */
+    .accountTitle {
+        font-size: 14px;
+        margin-bottom: 0;
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--accent);
+        background: rgba(0,0,0,0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        user-select: none;
+        font-weight: 700;
+    }
+    
+    /* DASHBOARD AGENT ROW */
+    .agent-leave-row {
+        display: flex;
+        align-items: center;
+        padding: 8px 10px;
+        border-bottom: 1px solid rgba(255,255,255,0.03);
+        gap: 12px;
+        cursor: pointer;
+        height: 48px;
+    }
+    .agent-leave-row:last-child { border-bottom: none; }
+    .agent-leave-row:hover { background: rgba(255,255,255,0.05); }
+
+    .row-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border-color); flex-shrink: 0; }
+    
+    /* --- ROW INFO STYLES --- */
+    .row-info { 
+        flex-grow: 1; 
+        display: flex; 
+        flex-direction: row; 
+        align-items: center; 
+        min-width: 0; 
+    }
+
+    /* Vertical stack for Name and Role */
+    .row-text-stack {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .row-name { font-size: 12px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .row-role { font-size: 10px; color: var(--muted); margin-top: 1px; }
+
+    /* DASHBOARD STATS */
+    .row-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; flex-shrink: 0; width: 140px; }
+    .stat-box { display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); border-radius: 4px; padding: 2px 0; border: 1px solid var(--border-color); }
+    .stat-box span { font-size: 8px; color: var(--muted); text-transform: uppercase; }
+    .stat-box b { font-size: 12px; line-height: 1; font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.5px; }
+    
+    .accountsWrap:not(.single-view) .stat-box.is-zero { opacity: 0.3; border-color: transparent; background: transparent; }
+
+    /* --- COLOR CODING --- */
+    .stat-box.vl b, .c-vl { color: var(--info); }
+    .stat-box.sl b, .c-sl { color: var(--warn); }
+    .stat-box.el b, .c-el { color: #f97316; }
+    .stat-box.lwop b, .c-abs { color: var(--danger); }
+
+    .stat-box.vl { border-color: rgba(59, 130, 246, 0.2); }
+    .stat-box.sl { border-color: rgba(245, 158, 11, 0.2); }
+    .stat-box.el { border-color: rgba(249, 115, 22, 0.2); }
+    .stat-box.lwop { border-color: rgba(239, 68, 68, 0.2); }
+
+
+    /* ========================================= */
+    /* --- IMPROVED ACCOUNT HEADER STATS (BADGES) --- */
+    /* ========================================= */
+
+    .acc-header-stats { 
+        display: flex; 
+        gap: 6px; 
+        align-items: center;
+    }
+
+    /* Base Badge Style */
+    .ahs-item { 
+        display: inline-flex; 
+        align-items: center; 
+        gap: 3px; 
+        padding: 3px 6px; 
+        border-radius: 4px; 
+        font-size: 10px; 
+        line-height: 1;
+        font-family: 'Inter', sans-serif; 
+        font-weight: 600;
+        border: 1px solid transparent;
+        letter-spacing: 0.2px;
+    }
+
+    /* Dark Mode (Glassy/Pastel) */
+    .ahs-vl { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border-color: rgba(59, 130, 246, 0.3); }
+    .ahs-sl { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.3); }
+    .ahs-el { background: rgba(249, 115, 22, 0.15); color: #fdba74; border-color: rgba(249, 115, 22, 0.3); }
+    .ahs-abs { background: rgba(239, 68, 68, 0.15); color: #f87171; border-color: rgba(239, 68, 68, 0.3); }
+
+    /* ========================================= */
+    /* --- SINGLE VIEW MODE (SELECTED ACCOUNT) --- */
+    /* ========================================= */
+    
+    .accountsWrap.single-view {
+        display: block; 
+        width: 100%;
+        max-width: none;
+    }
+
+    .accountsWrap.single-view .accountCard {
+        height: auto; 
+        min-height: auto;
+        background: transparent; 
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        overflow: visible;
+        transform: none !important; 
+        box-shadow: none !important;
+        cursor: default;
+    }
+
+    .accountsWrap.single-view .accountTitle {
+        background: var(--panel);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        margin-bottom: 10px;
+        padding: 12px 15px;
+        font-size: 18px; 
+        font-family: 'Bebas Neue', sans-serif;
+        letter-spacing: 0.5px;
+        color: var(--accent);
+        cursor: pointer;
+    }
+    .accountsWrap.single-view .accountTitle:hover { background: rgba(255,255,255,0.05); }
+
+    .accountsWrap.single-view .acc-header-stats { margin-left: auto; }
+
+    .accountsWrap.single-view .agentList {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        padding-bottom: 20px;
+    }
+
+    .accountsWrap.single-view .agent-leave-row {
+        height: 50px;
+        background: rgba(255, 255, 255, 0.01);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 0 12px;
+        justify-content: space-between;
+        transform: none !important;
+        transition: none !important;
+    }
+    
+    .accountsWrap.single-view .agent-leave-row:hover {
+        background: rgba(125, 211, 252, 0.03);
+        border-color: rgba(125, 211, 252, 0.2);
+    }
+
+    .accountsWrap.single-view .row-avatar { width: 36px; height: 36px; border-radius: 4px; }
+    .accountsWrap.single-view .row-name { font-size: 13px; margin-bottom: 2px; }
+    .accountsWrap.single-view .row-role { font-size: 11px; }
+
+    /* Fixed width name column */
+    .accountsWrap.single-view .row-text-stack {
+        flex: 0 0 200px; 
+        min-width: 200px;
+        max-width: 200px; 
+        border-right: 1px solid rgba(255, 255, 255, 0.05); 
+        padding-right: 15px;
+        margin-right: 15px;
+    }
+
+    .accountsWrap.single-view .row-stats {
+        display: flex; 
+        width: auto;
+        gap: 8px;
+        align-items: center;
+    }
+    
+    .accountsWrap.single-view .stat-box {
+        flex-direction: row; 
+        gap: 6px;
+        padding: 4px 8px;
+        background: transparent;
+        border: 1px solid var(--border-color);
+        min-width: 50px;
+        justify-content: space-between;
+    }
+
+    .accountsWrap.single-view .stat-box.is-zero {
+        display: flex !important;
+        opacity: 0.6;
+        border-color: var(--border-color);
+        background: transparent;
+    }
+
+    .accountsWrap.single-view .stat-box span { font-size: 10px; font-weight: 600; margin-bottom: 0; }
+    .accountsWrap.single-view .stat-box b { font-size: 14px; }
+
+    /* --- CREDIT TEXT STYLE --- */
+    .row-credits {
+        font-size: 16px;
+        font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.8px;
+        color: var(--accent); 
+        margin-top: 0; 
+        font-weight: 500;
+        line-height: 1;
+        white-space: nowrap;
+        flex-grow: 1; 
+    }
+
+    /* FILTERS */
+    .filters-bar {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+        background: var(--panel);
+        padding: 10px;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        align-items: flex-end;
+    }
+    
+    /* EDIT MODAL */
+    .edit-leave-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 8px;
+        align-items: end;
+        background: rgba(255,255,255,0.03);
+        padding: 10px;
+        border-radius: 6px;
+        margin-bottom: 15px;
+        border: 1px solid var(--border-color);
+    }
+    .modal-subtitle {
+        font-size: 11px;
+        color: var(--muted);
+        font-family: 'Inter', sans-serif;
+        font-weight: 400;
+    }
+    .existing-leaves-list {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        margin-top: 10px;
+    }
+    .leave-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        background: var(--input-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        font-size: 12px;
+    }
+    .btn-sm-del {
+        padding: 2px 6px;
+        font-size: 10px;
+        height: 20px;
+        background: rgba(239, 68, 68, 0.2);
+        color: var(--danger);
+        border: 1px solid var(--danger);
+    }
+    .btn-sm-del:hover { background: var(--danger); color: white; }
+    .settings-panel {
+        background: rgba(0,0,0,0.2);
+        padding: 10px;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
+    .radio-group { display: flex; gap: 12px; }
+    .radio-label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+        cursor: pointer;
+        color: var(--text-primary);
+    }
+    .radio-label input[type="radio"] { accent-color: var(--accent); }
+    .status-options { display: flex; align-items: center; gap: 8px; }
+    .status-options.hidden { display: none; }
+    .credits-display-box {
+        text-align: center;
+        padding: 8px;
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        border-radius: 4px;
+        color: var(--info);
+        font-size: 13px;
+        font-weight: 600;
+        font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.8px;
+    }
+    .header-actions{ gap: 4px; }
+
+    /* GLOBAL HEADER STATS (Top Left) */
+    .header-stats-grid {
+        position: absolute;
+        top: 0;
+        left: 30px;
+        display: grid;
+        grid-template-columns: 1fr 1fr; 
+        gap: 4px;
+    }
+    .theme-switch { margin-right: 1px; }
+
+    .h-stat {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        min-width: 80px; 
+        border: 1px solid transparent;
+        line-height: 1.2;
+    }
+
+    .h-stat span { font-size: 9px; opacity: 0.8; font-weight: 600; }
+    .h-stat b { font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 0.5px; }
+
+    .h-vl { background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.3); color: var(--info); }
+    .h-sl { background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.3); color: var(--warn); }
+    .h-el { background: rgba(249, 115, 22, 0.15); border-color: rgba(249, 115, 22, 0.3); color: #f97316; }
+    .h-abs { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); color: var(--danger); }
+    
+    /* ================================= */
+    /* --- LIGHT MODE VISIBILITY FIX --- */
+    /* ================================= */
+    
+    body.light-theme .accountTitle { color: #000 !important; background: #e5e7eb; border-bottom-color: #d1d5db; }
+    body.light-theme .row-name { color: #000 !important; }
+    body.light-theme .btn.btn-sm-del { color: #000 !important; border-color: #ffffff !important; }
+
+    /* Light Mode Account Header Stats (The Fix) */
+    body.light-theme .ahs-item { font-weight: 700; }
+    body.light-theme .ahs-vl { background: #e0f2fe; color: #0284c7; border-color: #bae6fd; }
+    body.light-theme .ahs-sl { background: #fef3c7; color: #b45309; border-color: #fde68a; }
+    body.light-theme .ahs-el { background: #ffedd5; color: #c2410c; border-color: #fed7aa; }
+    body.light-theme .ahs-abs { background: #fee2e2; color: #b91c1c; border-color: #fecaca; }
+
+    body.light-theme .c-vl, body.light-theme .stat-box.vl b { color: #0369a1; } 
+    body.light-theme .stat-box.vl { border-color: rgba(3, 105, 161, 0.3); background: rgba(3, 105, 161, 0.05); }
+
+    body.light-theme .c-sl, body.light-theme .stat-box.sl b { color: #b45309; } 
+    body.light-theme .stat-box.sl { border-color: rgba(180, 83, 9, 0.3); background: rgba(180, 83, 9, 0.05); }
+
+    body.light-theme .c-el, body.light-theme .stat-box.el b { color: #c2410c; }
+    body.light-theme .stat-box.el { border-color: rgba(194, 65, 12, 0.3); background: rgba(194, 65, 12, 0.05); }
+
+    body.light-theme .c-abs, body.light-theme .stat-box.lwop b { color: #b91c1c; }
+    body.light-theme .stat-box.lwop { border-color: rgba(185, 28, 28, 0.3); background: rgba(185, 28, 28, 0.05); }
+
+    body.light-theme .stat-box span { color: #4b5563; font-weight: 700; }
+    body.light-theme .settings-panel { background: #f3f4f6; border-color: #d1d5db; }
+    body.light-theme .credits-display-box { background: #ecfdf5; border-color: #6ee7b7; color: #059669; }
+    body.light-theme .radio-label { color: #374151; }
+    body.light-theme .row-credits { color: #059669; }
+    
+    /* Light Mode Header Stats */
+    body.light-theme .h-vl { background: rgba(3, 105, 161, 0.1); border-color: rgba(3, 105, 161, 0.3); color: #0369a1; }
+    body.light-theme .h-sl { background: rgba(180, 83, 9, 0.1); border-color: rgba(180, 83, 9, 0.3); color: #b45309; }
+    body.light-theme .h-el { background: rgba(194, 65, 12, 0.1); border-color: rgba(194, 65, 12, 0.3); color: #c2410c; }
+    body.light-theme .h-abs { background: rgba(185, 28, 28, 0.1); border-color: rgba(185, 28, 28, 0.3); color: #b91c1c; }
+
+    body.light-theme .accountsWrap.single-view .row-text-stack { border-right-color: rgba(0, 0, 0, 0.1); }
+
+    body.light-theme .app__body::-webkit-scrollbar-thumb,
+    body.light-theme .agentList::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Responsive */
+    @media (max-width: 700px) {
+        .accountsWrap { grid-template-columns: 1fr; }
+        .filters-bar { flex-direction: column; align-items: stretch; }
+        
+        .accountsWrap.single-view .agent-leave-row { height: auto; padding: 10px; flex-wrap: wrap; }
+        .accountsWrap.single-view .row-info { width: 100%; margin-bottom: 8px; flex-wrap: wrap; }
+        
+        .accountsWrap.single-view .row-text-stack {
+            flex: 1; 
+            min-width: 0;
+            max-width: none;
+            border-right: none;
+            margin-right: 0;
+            padding-right: 0;
+            margin-bottom: 5px;
+        }
+        
+        .accountsWrap.single-view .row-credits { width: 100%; }
+        
+        .accountsWrap.single-view .row-stats { width: 100%; justify-content: space-between; gap: 4px; }
+        .accountsWrap.single-view .stat-box { flex: 1; padding: 4px; justify-content: center; }
+        .accountsWrap.single-view .stat-box.is-zero { display: flex !important; opacity: 0.5; }
+        .acc-header-stats { display: none; } 
+        
+        .header-stats-grid { display: none; }
+    }
+    #backToDashBtn { margin-top: 5px; }
+    #backToDashBtn, .theme-switch { display: inline-flex; align-items: center; gap: 4px; }
+    .theme-switch{ margin-left:4px; }
+  </style>
+ </head>
+ <body>
+  <main class="app">
+   <!-- Header -->
+   <header class="app__header">
+    <div class="titleBlock">
+  <h1 id="appTitle">
+    Leave Tracker 
+    <span id="yearHeaderDisplay" style="color: var(--accent); font-size: 0.8em;"></span>
+  </h1>
+
+  <div class="datetime">
+    <span id="currentDate"></span>
+    <span id="currentTime"></span>
+  </div>
+
+  <button id="backToDashBtn" class="btn btn-secondary">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      style="margin-right: 5px;">
+      <line x1="19" y1="12" x2="5" y2="12"></line>
+      <polyline points="12 19 5 12 12 5"></polyline>
+    </svg>
+    Attendance Dashboard
+  </button>
+
+  <!-- Theme Toggle -->
+  <button id="theme-toggle" class="theme-switch" aria-label="Toggle dark mode" title="Toggle Theme">
+    <div class="icon-container">
+      <svg class="icon sun-icon" id="theme-toggle-light"
+        xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+        viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"></circle>
+        <line x1="12" y1="1" x2="12" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="23"></line>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+        <line x1="1" y1="12" x2="3" y2="12"></line>
+        <line x1="21" y1="12" x2="23" y2="12"></line>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+      </svg>
+      <svg class="icon moon-icon hidden" id="theme-toggle-dark"
+        xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+        viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 
+                 7 7 0 0 0 21 12.79z"></path>
+      </svg>
+    </div>
+  </button>
+</div>
+
+    <div class="header-actions">   
+     <div class="header-stats-grid">
+        <div class="h-stat h-vl"><span>VL</span> <b id="totalVl">0</b></div>
+        <div class="h-stat h-sl"><span>SL</span> <b id="totalSl">0</b></div>
+        <div class="h-stat h-el"><span>EL</span> <b id="totalEl">0</b></div>
+        <div class="h-stat h-abs"><span>LWOP</span> <b id="totalAbs">0</b></div>
+     </div>
+    </div>
+   </header>
+
+   <section class="app__body">
+    <!-- Controls -->
+    <div class="filters-bar">
+        <div style="flex-grow: 1;">
+            <label class="small">Filter Account</label>
+            <select id="leaveAccountFilter" style="width: 100%;">
+                <option value="">-- All Accounts --</option>
+            </select>
+        </div>
+        <div>
+            <label class="small">Month</label>
+            <select id="leaveMonthSelect"></select>
+        </div>
+        <div>
+            <label class="small">Year</label>
+            <select id="leaveYearSelect"></select>
+        </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div id="leaveBoard" class="accountsWrap"></div>
+
+   </section>
+    <footer class="app__footer">
+    <small>Tip: Click an Account Card to view full details. Click an agent to edit leaves.</small><br>
+    <small>Hotkeys enabled for this project. Feel free to explore.</small>
+    <div class="app-footer" style="text-align: center; margin-top: 30px; font-size: 12px; opacity: 0.6;"> © 2025 Jose Romeo. All Rights Reserved. <a href="https://joseromeoqr.netlify.app" style="color: inherit;" onclick="openPopup(event)">Support Development</a>
+    </div>
+   </footer>
+  </main>
+
+  <!-- EDIT LEAVE MODAL -->
+  <div id="editLeaveModal" class="modal" aria-hidden="true">
+    <div class="modal__backdrop" id="editLeaveModalBackdrop"></div>
+    <div class="modal__card" style="width: 450px;">
+        
+        <div class="modal__header">
+            <div style="display: flex; flex-direction: column;">
+                <h3 class="modalTitle" style="margin-bottom: 2px;">
+                    Modify: <span id="editLeaveAgentName" style="color:var(--accent);"></span>
+                </h3>
+                <span id="editLeaveHireDate" class="modal-subtitle"></span>
+            </div>
+            <button class="closeBtn" id="closeEditLeaveModal">✕</button>
+        </div>
+
+        <div class="modal__body">
+            
+            <div class="settings-panel">
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="empStatus" value="Regular" checked>
+                        <span>Regular</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="empStatus" value="Probationary">
+                        <span>Probationary</span>
+                    </label>
+                </div>
+
+                <div id="regularOptions" class="status-options">
+                    <label class="small">EL:</label>
+                    <select id="elDeductionSelect" class="text-input" style="font-size:11px;">
+                        <option value="LWOP">LWOP</option>
+                        <option value="VL">Deduct from VL</option>
+                        <option value="SL">Deduct from SL</option>
+                    </select>
+                </div>
+
+                <div id="probationaryOptions" class="status-options hidden">
+                    <span style="font-size:11px; color:var(--muted);">
+                        Accruing 1.25/mo from Hire Date.
+                    </span>
+                </div>
+            </div>
+
+            <div id="creditsDisplay" class="credits-display-box"></div>
+
+            <div style="border-top: 1px solid var(--border-color); margin: 15px 0 10px 0;"></div>
+
+            <div class="edit-leave-grid">
+                <div>
+                    <label class="small">Date</label>
+                    <input type="date" id="newLeaveDate" class="text-input" style="width:100%;">
+                </div>
+                <div>
+                    <label class="small">Type</label>
+                    <select id="newLeaveType" style="width:100%;">
+                        <option value="VL">VL</option>
+                        <option value="SL">SL</option>
+                        <option value="EL">EL</option>
+                        <option value="Absent">Absent (LWOP)</option>
+                    </select>
+                </div>
+                <button id="addLeaveBtn" class="btn btn-primary" style="height:28px;">Add</button>
+            </div>
+            
+            <h4 style="font-size:12px; margin: 15px 0 5px 0;">History (<span id="editLeaveMonthDisplay"></span>)</h4>
+            <div id="existingLeavesList" class="existing-leaves-list"></div>
+        </div>
+    </div>
+  </div>
+
+  <script src="js/leave-tracker.js"></script>
+ </body>
+</html>

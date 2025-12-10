@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="icons/icons.png">
+  <title>Team Dashboard ✓</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+ </head>
+ <body>
+  <main class="app">
+   <header class="app__header">
+    <div class="titleBlock">
+     <h1>Attendance Tracker <span id="companyNameDisplay" style="margin-left: 8px; font-weight: bold; color: var(--text-secondary);"></span>
+      <span id="managerNameDisplay" class="manager-name-title"></span>
+      <span id="totalAgentsHeaderCount" class="total-agents-header"></span>
+     </h1>
+     <div class="datetime">
+      <span id="currentDate"></span>
+      <span id="currentTime"></span>
+     </div>
+    </div>
+    
+    <!-- HEADER ACTIONS (HOTKEYS INTEGRATED) -->
+    <!-- HEADER ACTIONS (HOTKEYS INTEGRATED) -->
+    <div class="header-actions">
+     <button id="setCompanyBtn" class="btn btn-secondary btn-sm" title="Set Company Name / Alt + 1">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-building-2">
+       <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" />
+       <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" />
+       <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" />
+       <path d="M10 6h4" />
+       <path d="M10 10h4" />
+       <path d="M10 14h4" />
+       <path d="M10 18h4" />
+      </svg> <p>(1)</p>
+     </button>
+     
+     <button id="setManagerBtn" class="btn btn-secondary" title="Set Team or Manager Name / Alt + 2">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 20h9"/>
+    <path d="M16.5 3.5l4 4-10 10-4.5 1.5 1.5-4.5 9-9z"/>
+  </svg>
+  <p>(2)</p>
+</button>
+
+     <button id="showReadmeBtn" class="btn btn-primary" title="READ ME! / Alt + 3">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="9"/>
+    <line x1="12" y1="8" x2="12" y2="12"/>
+    <circle cx="12" cy="16" r="1"/>
+  </svg>
+  <p>(3)</p>
+</button>
+
+     
+     <!-- NEW LEAVE TRACKER BUTTON HERE -->
+     <button id="goToLeaveTrackerBtn" class="btn btn-secondary" title="Go to Leave Tracker">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-off">
+            <path d="M21 12V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h7M14 2v4M10 2v4M3 10h7M13 10h8M22 22l-5-5M17 22l5-5"/>
+        </svg>  <p> (<u>4</u>)</p>
+     </button>
+     
+     <button id="exportCsvBtn" class="btn btn-secondary" title="Export Monthly CSV (Alt + Q)">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-spreadsheet">
+       <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+       <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+       <path d="M8 10h8" />
+       <path d="M8 14h8" />
+       <path d="M8 18h3" />
+       <path d="M13 18h3" />
+      </svg> <p>(<u>Q</u>)</p>
+     </button>
+     
+     <button id="importBtn" class="btn btn-secondary" title="Import Backup File (Alt + W)">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3v14"/>
+    <path d="M5 10l7 7 7-7"/>
+    <path d="M5 21h14"/>
+  </svg>
+  <p>(<u>W</u>)</p>
+</button>
+
+     <button id="exportBtn" class="btn btn-secondary" title="Export Backup File (Alt + R)">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 21V7"/>
+    <path d="M5 14l7-7 7 7"/>
+    <path d="M5 3h14"/>
+  </svg>
+  <p>(<u>R</u>)</p>
+</button>
+
+     <input type="file" id="importFileInput" accept="application/json" style="display: none;">
+     
+     <!-- Theme Toggle -->
+     <button id="theme-toggle" class="theme-switch" aria-label="Toggle dark mode" title="Toggle Theme (Alt + T)">
+      <div class="icon-container">
+       <svg class="icon sun-icon" id="theme-toggle-light" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+       <svg class="icon moon-icon hidden" id="theme-toggle-dark" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </div>
+     </button>
+    </div>
+
+    <!-- STATUS COUNTERS (Grid Layout) -->
+    <div class="status-counters">
+     <div class="status-counter">
+      <div class="indicator ind-present"></div>
+      <span id="presentCount">0</span> <span id="presentCountTxt">Present</span>
+     </div>
+     <div class="status-counter">
+      <div class="indicator ind-late"></div>
+      <span id="lateCount">0</span> <span id="lateCountTxt">Late</span>
+     </div>
+     <div class="status-counter">
+      <div class="indicator ind-half"></div>
+      <span id="halfDayCount">0</span> <span id="halfDayCountTxt">Half Day</span>
+     </div>
+     <div class="status-counter">
+      <div class="indicator ind-absent"></div>
+      <span id="absentCount">0</span> <span id="absentCountTxt">Absent</span>
+     </div>
+     <div class="status-counter">
+      <div class="indicator ind-sl"></div>
+      <span id="slElCount">0</span> <span id="slElCountTxt">SL/EL</span>
+     </div>
+     <div class="status-counter">
+      <div class="indicator ind-vl"></div>
+      <span id="vlCount">0</span> <span id="vlCountTxt">VL</span>
+     </div>
+    </div>
+
+    <div class="controls">
+     <div class="controls-primary-row">
+      <!-- LEFT CONTROLS (With Navigation Arrows) -->
+      <div class="controls-left">
+       <input type="search" id="searchInput" class="text-input" placeholder="🔍 Search Agent or Account...">
+       
+       <!-- Account Nav -->
+       <div class="nav-group">
+           <span class="nav-label">Account</span>
+           <div class="nav-input-wrapper">
+               <button class="nav-btn" onclick="navigateSelect('accountFilter', -1)" title="Previous Account (Alt + Left)">
+                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+               </button>
+               <select id="accountFilter"></select>
+               <button class="nav-btn" onclick="navigateSelect('accountFilter', 1)" title="Next Account (Alt + Right)">
+                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+               </button>
+           </div>
+       </div>
+
+       <!-- Employee Nav -->
+       <div class="nav-group">
+           <span class="nav-label">Employee</span>
+           <div class="nav-input-wrapper">
+               <button class="nav-btn" onclick="navigateSelect('employeeSelect', -1)" title="Previous Employee (Alt + Up)">
+                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+               </button>
+               <select id="employeeSelect"></select>
+               <button class="nav-btn" onclick="navigateSelect('employeeSelect', 1)" title="Next Employee (Alt + Down)">
+                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+               </button>
+           </div>
+       </div>
+
+       <!-- Status Nav -->
+       <div class="nav-group">
+           <span class="nav-label">Status</span>
+           <select id="statusSelect" style="width: 100%;">
+             <option>Present</option>
+             <option>Late</option>
+             <option>Half Day</option>
+             <option>Absent</option>
+             <option>SL</option>
+             <option>VL</option>
+             <option>EL</option>
+             <option>Offline</option>
+           </select>
+       </div>
+       <!-- Global Time Inputs -->
+       
+      </div>
+
+      <!-- RIGHT CONTROLS -->
+      <div class="controls-right">
+       
+       <!-- Date Nav -->
+       <div class="nav-group">
+           <div style="display: flex; justify-content: space-between; align-items: center;">
+               <span class="nav-label">Date</span>
+               <span onclick="document.getElementById('jumpToTodayBtn').click()" style="font-size: 9px; cursor: pointer; color: var(--accent); margin-right: 2px;">TODAY</span>
+           </div>
+           <div class="nav-input-wrapper">
+               <button class="nav-btn" onclick="navigateDate(-1)" title="Previous Day (Alt + <)">
+                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+               </button>
+               <input type="date" id="attendanceDate" class="text-input" style="width: 130px; text-align: center;">
+               <button class="nav-btn" onclick="navigateDate(1)" title="Next Day (Alt + >)">
+                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+               </button>
+           </div>
+           <button id="jumpToTodayBtn" style="display: none;"></button>
+       </div>
+
+       <button id="addBtn" title="Mark Attendance">Mark</button>
+       <button id="filterStatusBtn" class="btn btn-secondary status-filter-btn" title="Alt + F"><u>F</u>ilter</button>
+       
+       <button id="endDayBtn" class="btn btn-warning" title="Save & Next Day (Alt + Shift + D)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;">
+         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+         <polyline points="14 2 14 8 20 8"></polyline>
+         <line x1="16" y1="13" x2="8" y2="13"></line>
+         <line x1="16" y1="17" x2="8" y2="17"></line>
+         <polyline points="10 9 9 9 8 9"></polyline>
+        </svg> End Day 
+       </button>
+       
+       <button id="clearBtn" title="Alt + C"><u>C</u>lear</button>
+       
+       <!-- Account Specific Action Buttons -->
+       <div id="accountActionButtons" style="display: none; gap: 10px; align-items: center;">
+        <div class="controls-separator"></div>
+        <button id="addAgentBtn" class="btn btn-primary" title="Alt + A"><u>A</u>dd Agent</button>
+        <button id="selectAgentsBtn" class="btn btn-secondary" title="Alt + S"><u>S</u>elect</button>
+        <button id="selectAllBtn" class="btn btn-secondary" title="Alt + Shift + A">Select <u>A</u>ll</button>
+        <button id="markAllAccountBtn" class="btn btn-secondary" title="Alt + M"><u>M</u>ark All</button>
+        <button id="deleteAgentsBtn" class="btn btn-danger" disabled title="Alt + D"><u>D</u>elete</button>
+        <button id="editAgentsBtn" class="btn btn-secondary" style="display: none;" title="Alt + Shift + E">Edit Info</button>
+        <button id="editAccountBtn" class="btn btn-secondary" title="Alt + E"><u>E</u>dit Acct</button>
+        <button id="removeAccountBtn" class="btn btn-danger" title="Alt + Delete">Remove</button>
+        <button id="addAccountBtn" class="btn btn-primary" style="grid-column: 1 / -1;">Create New Account</button>
+        <div class="controls-separator"></div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </header>
+
+   <section class="app__body">
+    <div id="accountsWrap" class="accountsWrap"></div>
+    <div id="monthlyDetailsView" class="details-container"></div>
+   </section>
+
+   <footer class="app__footer">
+    <small>Data stored locally on this browser. Agents default to <strong>Offline</strong> until logged. </small><br>
+    <small>Hotkeys enabled for this project. Feel free to explore.</small>
+    <div class="app-footer">© 2025 Jose Romeo. All Rights Reserved. <a href="https://joseromeoqr.netlify.app" style="color: inherit;" onclick="openPopup(event)">Support Development</a>
+    </div>
+    
+   </footer>
+  </main>
+
+  <!-- --- MODALS --- -->
+
+  <!-- Manager Name Modal -->
+  <div id="managerNameModal" class="modal" aria-hidden="true">
+   <div class="modal__backdrop" id="managerNameModalBackdrop"></div>
+   <div class="modal__card modal__card--small" role="dialog" aria-modal="true" aria-labelledby="managerNameModalTitle">
+    <div class="modal__header">
+     <h3 id="managerNameModalTitle">Welcome!</h3>
+     <button id="closeManagerNameModal" class="closeBtn">✕</button>
+    </div>
+    <div class="modal__body modal__body--center">
+     <input type="text" id="managerNameInput" placeholder="AM / Team Name" class="text-input" />
+     <button id="confirmManagerName" class="confirm-btn">Save Name</button>
+     <div id="managerNameMessage" class="modal-message"></div>
+    </div>
+   </div>
+  </div>
+
+  <!-- Readme Modal -->
+  <div id="readmeModal" class="modal" aria-hidden="true">
+   <div class="modal__backdrop" id="readmeModalBackdrop"></div>
+   <div class="modal__card" role="dialog" aria-modal="true" aria-labelledby="readmeModalTitle">
+    <div class="modal__header">
+     <h3 id="readmeModalTitle">Instructions &amp; Features</h3>
+     <button id="closeReadmeModalBtn" class="closeBtn">✕</button>
+    </div>
+    <div class="modal-body">
+     <ul class="readme-list" style="list-style: none; padding: 0; margin-bottom: 20px;">
+      <li style="margin-bottom: 8px;"><strong>🚀 Getting Started:</strong> Create accounts and add agents using the top menu buttons.</li>
+      <li style="margin-bottom: 8px;"><strong>📅 Daily Tracking:</strong> Select an agent/status and click "Mark". Use arrow keys for fast navigation.</li>
+      <li style="margin-bottom: 8px;"><strong>⌨️ Hotkeys:</strong> Use <strong>Alt + P/A/L</strong> for Present/Absent/Late. <strong>Alt + Arrows</strong> to navigate.</li>
+      <li style="margin-bottom: 8px;"><strong>✅ Bulk Actions:</strong> Toggle "Select", "Mark All" to mark attendance for whole teams.</li>
+      <li style="margin-bottom: 8px;"><strong>📊 Reports:</strong> Generate CSV/Excel reports or Import/Export full JSON backups.</li>
+     </ul>
+     <hr style="border-color: #444; margin: 15px 0;">
+     <p class="alert-text" style="color: #ef4444; font-weight: bold; text-align: center; font-size: 0.9rem; margin-bottom: 25px;"> ⚠️ IMPORTANT: Please "End Day" or export data regularly. </p>
+     <div class="app-footer" style="text-align: center; margin-top: 30px; font-size: 12px; opacity: 0.6;">🍺 <a href="https://joseromeoqr.netlify.app" style="color: inherit;" onclick="openPopup(event)">Support Developer</a> (Optional)
+    </div>
+    </div>
+   </div>
+  </div>
+
+  <!-- Add Account Modal -->
+  <div id="addAccountModal" class="modal" aria-hidden="true">
+   <div class="modal__backdrop" id="addAccountModalBackdrop"></div>
+   <div class="modal__card modal__card--small" role="dialog" aria-modal="true">
+    <div class="modal__header">
+     <h3 class="modalMonth">Add New Account</h3>
+     <button id="closeAddAccountModal" class="closeBtn">✕</button>
+    </div>
+    <div class="modal__body modal__body--center">
+     <input type="text" id="newAccountName" placeholder="Account Name" class="text-input" />
+     <button id="confirmAddAccount" class="confirm-btn">Confirm</button>
+     <div id="addAccountMessage" class="modal-message"></div>
+    </div>
+   </div>
+  </div>
+
+  <!-- Edit Account Modal (WITH SHIFT INPUTS) -->
+  <div id="editAccountModal" class="modal" aria-hidden="true">
+   <div class="modal__backdrop" id="editAccountModalBackdrop"></div>
+   <div class="modal__card modal__card--small" role="dialog" aria-modal="true">
+    <div class="modal__header">
+     <h3 class="modalMonth">Edit Account</h3>
+     <button id="closeEditAccountModal" class="closeBtn">✕</button>
+    </div>
+    <div class="modal__body modal__body--center">
+     <p>Current Account: <strong id="currentAccountNameDisplay"></strong></p>
+     <input type="text" id="editAccountNameInput" placeholder="New Account Name" class="text-input" />
+
+     <!-- Account Default Schedule -->
+     <div style="width: 100%; margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 10px;">
+         <p style="font-size: 11px; color: var(--accent); margin-bottom: 5px; font-weight: bold;">Default Account Schedule</p>
+         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+             <div>
+                 <label class="small">Default Start</label>
+                 <input type="time" id="editAccountShiftStart" class="text-input" style="width: 100%;">
+             </div>
+             <div>
+                 <label class="small">Default End</label>
+                 <input type="time" id="editAccountShiftEnd" class="text-input" style="width: 100%;">
+             </div>
+         </div>
+         <p style="font-size: 10px; color: var(--muted); margin-top: 5px;">
+             Agents with empty schedules will use these times automatically.
+         </p>
+     </div>
+
+     <button id="confirmEditAccount" class="confirm-btn" style="margin-top: 15px;">Update Account</button>
+     <div id="editAccountMessage" class="modal-message"></div>
+    </div>
+   </div>
+  </div>
+
+  <!-- Add Agent Modal -->
+  <div id="addAgentModal" class="modal" aria-hidden="true">
+   <div class="modal__backdrop" id="addAgentModalBackdrop"></div>
+   <div class="modal__card modal__card--small" role="dialog" aria-modal="true">
+    <div class="modal__header">
+     <h3 class="modalMonth">Add New Agent to <span id="addAgentAccountName"></span></h3>
+     <button id="closeAddAgentModal" class="closeBtn">✕</button>
+    </div>
+    <div class="modal__body modal__body--center">
+     <input type="text" id="newAgentName" placeholder="Agent Name" class="text-input" />
+     <input type="text" id="newAgentRole" placeholder="Position/Role" class="text-input" />
+     <button id="confirmAddAgent" class="confirm-btn">Confirm</button>
+     <div id="addAgentMessage" class="modal-message"></div>
+    </div>
+   </div>
+  </div>
+
+  <!-- Combined Agent Info / Edit Modal -->
+  <div class="modal" id="agentInfoModal" aria-hidden="true" role="dialog" aria-modal="true">
+   <div class="modal__backdrop" id="agentInfoModalBackdrop"></div>
+   <div class="modal__card modal__card--agent-info" id="agentInfoModalCard">
+    <div class="modal__header">
+     <h3 id="agentInfoModalTitle">Agent Information</h3>
+     <div class="modal__header-actions">
+      <button class="btn btn-secondary btn-sm" id="editAgentInfoBtn" title="Alt + E"><u>E</u>dit Info</button>
+      <button class="closeBtn" id="closeAgentInfoModal">&times;</button>
+     </div>
+    </div>
+    <div class="modal__body">
+     <div id="agentInfoDisplayView">
+      <div class="agent-info-layout">
+       <div class="agent-info-layout__image-container">
+        <img src="" alt="Agent Avatar" id="agentInfoImage" class="agent-info-modal__image">
+       </div>
+       <div class="agent-info-layout__details">
+        <h4 class="agent-info-modal__name" id="agentInfoName"></h4>
+        <p class="agent-info-modal__meta">
+         <span id="agentInfoAccount"></span> &mdash; <span id="agentInfoRole"></span>
+        </p>
+        <div class="agent-info-modal__details">
+         <p><strong>Hire Date:</strong> <span id="agentInfoHireDate"></span></p>
+         <p><strong>Birthday:</strong> <span id="agentInfoBirthday"></span></p>
+         <p><strong>Email:</strong> <span id="agentInfoEmail"></span></p>
+         <p><strong>Shift:</strong> <span id="agentInfoShiftDisplay">Not set</span></p>
+        </div>
+       </div>
+      </div>
+      <!-- Daily Record Editor Section -->
+      <hr style="border-color: var(--border); margin: 15px 0; opacity: 0.5;">
+      <div style="background: var(--bg-secondary); padding: 15px; border-radius: 8px;">
+       <h4 style="margin-top:0; margin-bottom: 10px; font-size: 0.9rem;"> Edit Record for: <span id="agentInfoSelectedDateDisplay" style="color: var(--accent);"></span></h4>
+       <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+        <label class="small" style="width:100%"> Status <select id="agentInfoStatusSelect" class="text-input" style="width:100%">
+          <option>Present</option>
+          <option>Late</option>
+          <option>Half Day</option>
+          <option>Absent</option>
+          <option>SL</option>
+          <option>VL</option>
+          <option>EL</option>
+          <option>Offline</option>
+         </select>
+        </label>
+        <label class="small" style="width:100%"> Time In <input type="time" id="agentInfoTimeIn" class="text-input" style="width:100%">
+        </label>
+        <label class="small" style="width:100%"> Time Out <input type="time" id="agentInfoTimeOut" class="text-input" style="width:100%">
+        </label>
+       </div>
+       <button id="agentInfoSaveRecordBtn" class="btn btn-primary" style="width: 100%;" title="Alt + R">Update <u>R</u>ecord</button>
+      </div>
+     </div>
+     
+     <!-- EDIT VIEW -->
+     <div id="agentInfoEditView" class="hidden">
+      <div class="edit-agent-form">
+       <div class="form-section-image">
+        <img src="" alt="Agent Avatar Preview" id="editAgentImagePreview" class="agent-image-preview">
+        <label for="editAgentImageUpload" class="btn btn-secondary btn-sm" title="Alt + I">Upload <u>I</u>mage</label>
+        <input type="file" id="editAgentImageUpload" accept="image/*" style="display: none;">
+        <p class="small-text">or paste image URL below:</p>
+        <input type="text" id="editAgentImageUrlInput" class="text-input" placeholder="https://...">
+       </div>
+       <div class="form-section-details">
+        <p>Agent Name</p>
+        <input type="text" id="editAgentNameInput" class="text-input">
+        <p>Role</p>
+        <input type="text" id="editAgentRoleInput" class="text-input">
+        
+        <p style="margin-top: 10px; color: var(--accent); font-weight:bold;">Shift Schedule Override</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <div>
+                <label class="small">Start</label>
+                <input type="time" id="editAgentShiftStart" class="text-input" style="width: 100%;">
+            </div>
+            <div>
+                <label class="small">End</label>
+                <input type="time" id="editAgentShiftEnd" class="text-input" style="width: 100%;">
+            </div>
+        </div>
+
+        <p>Hire Date</p>
+        <input type="date" id="editAgentHireDateInput" class="text-input">
+        <p>Birthday</p>
+        <input type="text" id="editAgentBirthdayInput" class="text-input" placeholder="MM/DD/YYYY">
+        <p>Email</p>
+        <input type="email" id="editAgentEmailInput" class="text-input">
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="modal__footer">
+     <p class="modal-message" id="agentInfoMessage"></p>
+     <div id="agentInfoEditButtons" class="modal__footer-actions hidden">
+      <button class="btn btn-secondary" id="cancelAgentInfoEditBtn" title="Alt + C"><u>C</u>ancel</button>
+      <button class="btn btn-primary" id="confirmAgentInfoBtn" title="Alt + S"><u>S</u>ave Changes</button>
+     </div>
+    </div>
+   </div>
+  </div>
+
+  <!-- Custom Dialog Modal -->
+  <div id="customDialogModal" class="modal" aria-hidden="true">
+   <div class="modal__backdrop" id="customDialogModalBackdrop"></div>
+   <div class="modal__card modal__card--small" role="alertdialog" aria-modal="true">
+    <div class="modal__header">
+     <h3 id="customDialogTitle" class="modalTitle">Notification</h3>
+    </div>
+    <div class="modal__body">
+     <p id="customDialogMessage"></p>
+    </div>
+    <div class="modal__footer" id="customDialogButtons"></div>
+   </div>
+  </div>
+
+  <!-- Export to CSV Modal -->
+  <div id="exportCsvModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="exportCsvModalTitle">
+   <div id="exportCsvModalBackdrop" class="modal__backdrop"></div>
+   <div class="modal__card modal__card--small">
+    <div class="modal__header">
+     <h3 id="exportCsvModalTitle" class="modalTitle">Export Monthly Report</h3>
+     <button id="closeExportCsvModalBtn" class="closeBtn" aria-label="Close modal">&times;</button>
+    </div>
+    <div class="modal__body modal__body--center">
+     <label class="small" style="width: 100%; align-items: stretch;"> Select Month: <select id="monthSelect" style="width: 100%;"></select>
+     </label>
+     <label class="small" style="width: 100%; align-items: stretch; margin-top: 8px;"> Account Manager's Name (Optional) <input type="text" id="accountManagerName" class="text-input" placeholder="Account Manager's Name" style="width: 100%; margin-top: 2px;">
+     </label>
+    </div>
+    <div class="modal__footer" style="justify-content: space-between;">
+     <button id="confirmExportCsvBtn" class="btn btn-secondary">Export CSV (Text)</button>
+     <button id="confirmExportExcelBtn" class="btn btn-primary" style="background-color: #16a34a; border: none; color: white;"> Export Designed Excel </button>
+    </div>
+   </div>
+  </div>
+
+  <!-- Export to JSON Modal -->
+  <div id="exportJsonModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="exportJsonModalTitle">
+   <div id="exportJsonModalBackdrop" class="modal__backdrop"></div>
+   <div class="modal__card modal__card--small">
+    <div class="modal__header">
+     <h3 id="exportJsonModalTitle" class="modalTitle">Export Full Data Backup</h3>
+     <button id="closeExportJsonModalBtn" class="closeBtn" aria-label="Close modal">&times;</button>
+    </div>
+    <div class="modal__body modal__body--center">
+     <p style="font-size: 12px; color: var(--muted); text-align: center; margin-bottom: 8px;">This will download a full backup of all employees, records, and statuses.</p>
+     <label class="small" style="width: 100%; align-items: stretch;"> Account Manager's Name (Optional) <input type="text" id="accountManagerNameJsonInput" class="text-input" placeholder="Included in filename & data" style="width: 100%; margin-top: 2px;">
+     </label>
+    </div>
+    <div class="modal__footer">
+     <button id="confirmExportJsonBtn" class="btn btn-primary">Download Backup</button>
+    </div>
+   </div>
+  </div>
+
+  <!-- Company Name Modal -->
+  <div id="companyNameModal" class="modal" aria-hidden="true">
+   <div class="modal__backdrop" id="companyNameModalBackdrop"></div>
+   <div class="modal__card modal__card--small">
+    <div class="modal__header">
+     <div class="modalTitle">Set Company Name</div>
+     <button class="closeBtn" id="closeCompanyNameModal">✕</button>
+    </div>
+    <div class="modal__body">
+     <div style="display: flex; flex-direction: column; gap: 8px;">
+      <div>
+       <label for="companyNameInput" class="small">Company Name</label>
+       <input type="text" id="companyNameInput" class="text-input" placeholder="e.g., SOS" autocomplete="off">
+      </div>
+      <!-- SOS MODE CHECKBOX -->
+      <div style="display: flex; align-items: center; gap: 8px; margin-top: 5px;">
+       <input type="checkbox" id="enableSosMode" style="accent-color: var(--accent); cursor: pointer;">
+       <label for="enableSosMode" style="font-size: 12px; color: var(--text-secondary); cursor: pointer;"> Hide Weekends (Show Weekdays Only) </label>
+      </div>
+     </div>
+     <div id="companyNameMessage" class="modal-message" style="margin-top: 8px; min-height: 14px;"></div>
+    </div>
+    <div class="modal__footer">
+     <button class="btn btn-primary" id="confirmCompanyName" style="width: 100%;">Save Name</button>
+    </div>
+   </div>
+  </div>
+
+  <!-- Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <script src="js/app.js"></script>
+ </body>
+</html>
